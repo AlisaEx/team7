@@ -10,9 +10,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var serenityy = 500;
   var serenityspeed = 3.5;
   var bulletSpeed = 4;
-  var enemyx = 300;
-  var enemyy = 0;
-  var attackSpeed = 4;
+  var attackSpeed = 2.5;
   var attackx = 0;
   var attacky = 0;
   var bulletArray = [];
@@ -43,11 +41,11 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var backImg = rm.loadImage('space2.jpg');
   var serenity = rm.loadImage('serenity.png');
   var bullet = rm.loadImage('bullet.png');
-  var enemy = rm.loadImage('enemy.png');
   var attack = rm.loadImage('enemyAttack.png');
   var start = rm.loadImage('start.png');
   var kaboom = rm.loadImage('kaboom.png')
   var score = rm.loadImage('score.png');
+  var over = rm.loadImage('over.png')
 
   //Sounds.
   var music = rm.loadSound('music.ogg');
@@ -73,10 +71,12 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
       if (gamestart===false){
         context.drawImage(start,startx,starty);
       }
+      else if (gameOver===true){
+        context.drawImage(over, overx, overy);
+      }
       else{
         context.drawImage(backImg, imgx, imgy);
         context.drawImage(serenity, serenityx, serenityy);
-        context.drawImage(enemy, enemyx, enemyy);
         context.drawImage(score, scorex, scorey);
         bulletArray.forEach (function(bulletObj){
           context.drawImage(bullet, bulletObj.x, bulletObj.y);
@@ -111,9 +111,9 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         musicSource = rm.playSound(music, true); //Loop music.
         gameStarted = true;
       }
-      else if (gameOver) {
+      else if (scoreAmt<0) {
         musicSource.noteOff();
-        gameOver = false;
+        gameOver = true;
       } else {
       
         timeSinceAngry += millis;
@@ -159,13 +159,13 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
                     bulletObj.destroy = true;
                     attackObj.destroy = true;
                 }
-                // if (collides(serenity, attackObj)===true){
-                //   var kaboomObj = new Sprite({x:serenityObj.x,y:serenityObj.y, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
-                //   kaboomArray.push(kaboomObj);
-                //   kaboomObj.countdown=1000;
-                //   scoreAmt--;
-                //   serenity.destroy = true;
-                // }
+                 if (collides(serenity, attackObj)===true){
+                   var kaboomObj = new Sprite({x:serenityObj.x-kaboom.width / 2,y:serenityObj.y - kaboom.height / 2, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
+                   kaboomArray.push(kaboomObj);
+                   kaboomObj.countdown=500;
+                   scoreAmt--;
+                   attackObj.destroy = true;
+                 }
             });
         });
         
