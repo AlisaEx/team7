@@ -16,7 +16,6 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var bulletArray = [];
   var attackArray = [];
   var kaboomArray = [];
-  var gamestart = false;
   var startx = 0;
   var starty = 0;
   var scorex = 0;
@@ -68,7 +67,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
     canvasId: 'canvas',
     resourceManager: rm,
     draw: function(context){
-      if (gamestart===false){
+      if (gameStarted===false){
         context.drawImage(start,startx,starty);
       }
       else if (gameOver===true){
@@ -87,7 +86,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         kaboomArray.forEach(function(kaboomObj){
           context.drawImage(kaboom, kaboomObj.x, kaboomObj.y);
         });
-        context.strokeStyle = "#FDAD3A"
+        context.strokeStyle = "#FDAD3A";
         context.font = "48px herculean";
         context.fillText(scoreAmt, 150, 50);
       }
@@ -160,7 +159,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
                     attackObj.destroy = true;
                 }
                  if (collides(serenity, attackObj)===true){
-                   var kaboomObj = new Sprite({x:serenityObj.x-kaboom.width / 2,y:serenityObj.y - kaboom.height / 2, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
+                   var kaboomObj = new Sprite({x:serenityx-kaboom.width / 2,y:serenityy - kaboom.height / 2, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
                    kaboomArray.push(kaboomObj);
                    kaboomObj.countdown=500;
                    scoreAmt--;
@@ -202,7 +201,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         // --------------------------------------------------------
       
         if(this.inputManager.keyActions[keys.ENTER].isPressed()){
-          gamestart = true;
+          gameStarted = true;
         }
         if(this.inputManager.keyActions[keys.LEFT_ARROW].isPressed() && serenityx > 0){
           serenityx-= serenityspeed; 
