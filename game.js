@@ -6,8 +6,6 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
 
   var imgx = 0;
   var imgy = 0;
-  var serenityx = 300;
-  var serenityy = 500;
   var serenityspeed = 3.5;
   var bulletSpeed = 4;
   var attackSpeed = 2.5;
@@ -16,6 +14,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var bulletArray = [];
   var attackArray = [];
   var kaboomArray = [];
+  var serenityArray = [];
   var startx = 0;
   var starty = 0;
   var scorex = 0;
@@ -68,15 +67,17 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
     resourceManager: rm,
     draw: function(context){
       if (gameStarted===false){
-        context.drawImage(start,startx,starty);
+        context.drawImage(start, startx, starty);
       }
       else if (gameOver===true){
         context.drawImage(over, overx, overy);
       }
       else{
         context.drawImage(backImg, imgx, imgy);
-        context.drawImage(serenity, serenityx, serenityy);
         context.drawImage(score, scorex, scorey);
+        serenityArray.forEach (function(serenityObj){
+         context.drawImage(serenity, serenityObj.x, serenityObj.y);
+        });
         bulletArray.forEach (function(bulletObj){
           context.drawImage(bullet, bulletObj.x, bulletObj.y);
         });
@@ -129,6 +130,8 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
           if (attackArray.length < 30){
             var attackObj = new Sprite({x:Math.random()*this.width,y:attacky,w:attack.width, h:attack.height, dx:0, dy:attackSpeed});
             attackArray.push(attackObj);
+            var serenityObj = new Sprite({x:300, y:500, w:serenity.width, h:serenity.height, dx:0, dy:serenityspeed});
+            serenityArray.push(serenityObj);
           }
           timeSinceAttack = 0;
         }
@@ -158,8 +161,8 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
                     bulletObj.destroy = true;
                     attackObj.destroy = true;
                 }
-                 if (collides(serenity, attackObj)===true){
-                   var kaboomObj = new Sprite({x:serenityx-kaboom.width / 2,y:serenityy - kaboom.height / 2, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
+                 else if (collides(serenityObj, attackObj)===true){
+                   var kaboomObj = new Sprite({x:serenityObj.x-kaboom.width / 2,y:serenityObj.y - kaboom.height / 2, w:kaboom.width, h: kaboom.height, dx:0, dy:0});
                    kaboomArray.push(kaboomObj);
                    kaboomObj.countdown=500;
                    scoreAmt--;
@@ -203,24 +206,24 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         if(this.inputManager.keyActions[keys.ENTER].isPressed()){
           gameStarted = true;
         }
-        if(this.inputManager.keyActions[keys.LEFT_ARROW].isPressed() && serenityx > 0){
-          serenityx-= serenityspeed; 
+        if(this.inputManager.keyActions[keys.LEFT_ARROW].isPressed() && serenityObj.x > 0){
+          serenityObj.x-= serenityspeed; 
         }
-        if(this.inputManager.keyActions[keys.RIGHT_ARROW].isPressed() && serenityx < (this.width-serenity.width)){
-          serenityx+= serenityspeed;
+        if(this.inputManager.keyActions[keys.RIGHT_ARROW].isPressed() && serenityObj.x < (this.width-serenityObj.width)){
+          serenityObj.x+= serenityspeed;
         }
-        if(this.inputManager.keyActions[keys.UP_ARROW].isPressed() && serenityy > 0){
-          serenityy-=serenityspeed;
+        if(this.inputManager.keyActions[keys.UP_ARROW].isPressed() && serenityObj.y > 0){
+          serenityObj.y-=serenityspeed;
         }
-        if(this.inputManager.keyActions[keys.DOWN_ARROW].isPressed() && serenityy < (this.height-serenity.height)){
-          serenityy+=serenityspeed;
+        if(this.inputManager.keyActions[keys.DOWN_ARROW].isPressed() && serenityObj.y < (this.height-serenityObj.height)){
+          serenityObj.y+=serenityspeed;
         }
       
         timeSinceShot += millis;
         if(this.inputManager.keyActions[keys.SPACE].getAmount()){
           if (timeSinceShot > 100) {
-            bulletx = serenityx+(serenity.width / 2);
-            bullety = serenityy+(serenity.height / 2);
+            bulletx = serenityObj.x+(serenityObj.width / 2);
+            bullety = serenityObj.y+(serenityObj.height / 2);
             var bulletObj = new Sprite({x:bulletx,y:bullety, w:bullet.width, h: bullet.height, dx:0, dy: -bulletSpeed});
             bulletArray.push(bulletObj);
             rm.playSound(pewSound);
