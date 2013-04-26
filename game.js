@@ -65,7 +65,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var game = new GameCore({
     canvasId: 'canvas',
     resourceManager: rm,
-    drawidth: function(context){
+    draw: function(context){
       if (gameStarted===false){
         context.drawImage(start, startx, starty);
       }
