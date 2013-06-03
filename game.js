@@ -4,9 +4,9 @@
 
 require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprite'], function(GameCore, ResourceManager, keys, Sprite){
 
-  var imgx = 0;
-  var imgy = 0;
-  var serenityspeed = 3.5;
+  var backImgx = 0;
+  var backImgy = 0;
+  var serenitySpeed = 3.5;
   var bulletSpeed = 4;
   var attackSpeed = 2.5;
   var attackx = 0;
@@ -21,13 +21,13 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
   var scorey = 0;
   var scoreAmt = 0;
   
+  //collision detection function
   function collides(a, b) {
     return a.x < b.x + b.width &&
           a.x + a.width > b.x &&
           a.y < b.y + b.height &&
           a.y + a.height > b.y;
   }
-  var scoreAmt = 0;
   
   //setup a ResourceManager to use in the game
   var rm = new ResourceManager({
@@ -73,7 +73,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         context.drawImage(over, overx, overy);
       }
       else{
-        context.drawImage(backImg, imgx, imgy);
+        context.drawImage(backImg, backImgx, backImgy);
         context.drawImage(score, scorex, scorey);
         serenityArray.forEach (function(serenityObj){
          context.drawImage(serenity, serenityObj.x, serenityObj.y);
@@ -111,11 +111,11 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         musicSource = rm.playSound(music, true); //Loop music.
         gameStarted = true;
       }
-      else if (scoreAmt<0) {
+      else if (scoreAmt<=0 && gameStarted===true) {
         musicSource.noteOff();
         gameOver = true;
-      } else {
-      
+      }
+      else {
         timeSinceAngry += millis;
         if (timeSinceAngry > 1000000) {
           rm.playSound(veryAngrySound);
@@ -128,17 +128,13 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         timeSinceAttack += millis;
         if (timeSinceAttack > 100) {
           if (attackArray.length < 30){
-            var attackObj = new Sprite({x:Math.random()*this.width,y:attacky,width:attack.width, height:attack.height, dx:0, dy:attackSpeed});
+            var attackObj = new Sprite({x:Math.random()*this.width,y:0,width:attack.width, height:attack.height, dx:0, dy:attackSpeed});
             attackArray.push(attackObj);
-            var serenityObj = new Sprite({x:300, y:500, width:serenity.width, height:serenity.height, dx:0, dy:serenityspeed});
+            var serenityObj = new Sprite({x:300, y:500, width:serenity.width, height:serenity.height, dx:0, dy:serenitySpeed});
             serenityArray.push(serenityObj);
           }
           timeSinceAttack = 0;
         }
-      
-        bulletArray.forEach (function(bulletObj){
-          bulletObj.y = bulletObj.y - bulletSpeed;
-        });
       
         bulletArray = bulletArray.filter (function(bulletObj){
             if (bulletObj.y < 0 || bulletObj.destroy){
@@ -176,7 +172,7 @@ require(['frozen/GameCore', 'frozen/ResourceManager', 'dojo/keys', 'frozen/Sprit
         });
       
         attackArray = attackArray.filter (function(attackObj){
-          if (attackObj.y > 700 || attackObj.destroy === true){
+          if (attackObj.y > 710 || attackObj.destroy === true){
             return false;
           }
           else{
